@@ -52,7 +52,7 @@ export class StickFigureScene extends BaseScene implements ResultsHandler {
 
         const grid = new GridHelper(100, 40);
         grid.rotation.x = Math.PI / 2;
-        //this.scene.add(grid);
+        this.scene.add(grid);
 
         const axesHelper = new AxesHelper(100);
         this.scene.add(axesHelper);

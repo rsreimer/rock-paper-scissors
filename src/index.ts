@@ -3,13 +3,13 @@ import {Results} from "@mediapipe/hands";
 import {ResultsHandler} from "./core/results-handler";
 import {GestureDetector} from "./core/gesture-detector";
 import {StickFigureScene} from "./stick-figure/stick-figure-scene";
-import {paper2, scissors} from "./test-data/test-gestures";
+import {paper2, rock2} from "./test-data/test-gestures";
 
 export function main() {
     let currentResults: Results | null = {
         multiHandLandmarks: [
             paper2,
-            scissors
+            rock2
         ],
         multiHandedness: [],
         image: null as any,

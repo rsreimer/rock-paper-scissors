@@ -54,7 +54,7 @@ function rotateXAxis(landmarks: LandmarkList): LandmarkList {
 
     const indexKnuckle = landmarks[HandLandmarks.Index_finger_mcp];
 
-    const direction = indexKnuckle.y >= 0 ? 1 : -1;
+    const direction = indexKnuckle.z < 0 ? 1 : -1;
 
     const rotation = getAngleBetween(yAxis, {
         x: 0,
