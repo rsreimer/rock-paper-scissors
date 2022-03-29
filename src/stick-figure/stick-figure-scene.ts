@@ -1,4 +1,4 @@
-import {AxesHelper, Vector3} from "three";
+import {AxesHelper, GridHelper, Vector3} from "three";
 import {HAND_CONNECTIONS, Results} from "@mediapipe/hands";
 import {buildStickFigure, StickFigure} from "./stick-figure";
 import {BaseScene} from "../core/base-scene";
@@ -47,13 +47,24 @@ export class StickFigureScene extends BaseScene implements ResultsHandler {
         this.render();
     }
 
-    private build(hands = 1) {
-        this.camera.position.z = 40;
+    private build(hands = 2) {
+        this.camera.position.x = 40;
 
-        this.scene.add(new AxesHelper(100));
+        const grid = new GridHelper(100, 40);
+        grid.rotation.x = Math.PI / 2;
+        //this.scene.add(grid);
+
+        const axesHelper = new AxesHelper(100);
+        this.scene.add(axesHelper);
+
+        const handColors = [
+            {boxColor: 0x00ff00, lineColor: 0x0000ff},
+            {boxColor: 0x00ffff, lineColor: 0xff0000},
+        ]
 
         for (let i = 0; i < hands; i++) {
-            const stickFigure = buildStickFigure();
+            const {lineColor, boxColor} = handColors[i];
+            const stickFigure = buildStickFigure(boxColor, lineColor);
 
             this.stickFigures.push(stickFigure);
             this.scene.add(stickFigure.anchor);

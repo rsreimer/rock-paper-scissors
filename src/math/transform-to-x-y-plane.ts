@@ -3,16 +3,11 @@ import {getAngleBetween} from "./get-angle-between";
 import {HandLandmarks} from "../core/hand-landmarks";
 import {rotateX, rotateY, rotateZ} from "./rotate";
 
-export function transformToXYPlane(landmarks: LandmarkList): LandmarkList {
-    // Copy array
-    const xAxis: Landmark = {x: 1, y: 0, z: 0};
-    const yAxis: Landmark = {x: 0, y: 1, z: 0};
-    const zAxis: Landmark = {x: 0, y: 0, z: 1};
 
-    // Translate hand so that wrist is at (0,0,0)
-    const centered: LandmarkList = landmarks.map(landmark => {
-        const wrist = landmarks[0];
+function centerWrist(landmarks: LandmarkList): LandmarkList {
+    const wrist = landmarks[0];
 
+    return landmarks.map(landmark => {
         return {
             x: landmark.x - wrist.x,
             y: landmark.y - wrist.y,
@@ -20,31 +15,61 @@ export function transformToXYPlane(landmarks: LandmarkList): LandmarkList {
             visibility: landmark.visibility
         }
     })
+}
 
-    const zAxisRotation = -getAngleBetween(xAxis, {
-        x: centered[HandLandmarks.Pinky_mcp].x,
-        y: centered[HandLandmarks.Pinky_mcp].y,
+function rotateZAxis(landmarks: LandmarkList): LandmarkList {
+    const xAxis: Landmark = {x: 1, y: 0, z: 0};
+
+    const pinkyKnuckle = landmarks[HandLandmarks.Pinky_mcp];
+
+    const direction = pinkyKnuckle.y < 0 ? 1 : -1;
+
+    const rotation = getAngleBetween(xAxis, {
+        x: pinkyKnuckle.x,
+        y: pinkyKnuckle.y,
         z: 0
     });
-    const zRotated = centered.map(landmark => rotateZ(landmark, zAxisRotation));
 
-    const yAxisRotation = -getAngleBetween(xAxis, {
-        x: zRotated[HandLandmarks.Pinky_mcp].x,
+    return landmarks.map(landmark => rotateZ(landmark, direction * rotation));
+}
+
+function rotateYAxis(landmarks: LandmarkList): LandmarkList {
+    const xAxis: Landmark = {x: 1, y: 0, z: 0};
+
+    const pinkyKnuckle = landmarks[HandLandmarks.Pinky_mcp];
+
+    const direction = pinkyKnuckle.x < 0 ? 1 : -1;
+
+    const rotation = getAngleBetween(xAxis, {
+        x: pinkyKnuckle.x,
         y: 0,
-        z: zRotated[HandLandmarks.Pinky_mcp].z
+        z: pinkyKnuckle.z
     });
 
-    const yRotated = zRotated.map(landmark => rotateY(landmark, yAxisRotation));
+    return landmarks.map(landmark => rotateY(landmark, direction * rotation));
+}
 
-    const xAxisRotation = -getAngleBetween(yAxis, {
+function rotateXAxis(landmarks: LandmarkList): LandmarkList {
+    const yAxis: Landmark = {x: 0, y: 1, z: 0};
+
+    const indexKnuckle = landmarks[HandLandmarks.Index_finger_mcp];
+
+    const direction = indexKnuckle.y >= 0 ? 1 : -1;
+
+    const rotation = getAngleBetween(yAxis, {
         x: 0,
-        y: yRotated[HandLandmarks.Index_finger_mcp].y,
-        z: yRotated[HandLandmarks.Index_finger_mcp].z
+        y: indexKnuckle.y,
+        z: indexKnuckle.z
     });
 
-    const xRotated = yRotated.map(landmark => rotateX(landmark, xAxisRotation));
+    return landmarks.map(landmark => rotateX(landmark, direction * rotation));
+}
 
-    console.log(yRotated[5], yRotated[17])
+export function transformToXYPlane(landmarks: LandmarkList): LandmarkList {
+    const centered = centerWrist(landmarks);
+    const zRotated = rotateZAxis(centered);
+    const yRotated = rotateYAxis(zRotated);
+    const xRotated = rotateXAxis(yRotated);
 
     return xRotated;
 }

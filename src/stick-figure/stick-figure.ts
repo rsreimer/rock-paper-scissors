@@ -7,10 +7,10 @@ export interface StickFigure {
     anchor: Object3D;
 }
 
-export function buildStickFigure() {
+export function buildStickFigure(boxColor = 0x00ff00, lineColor = 0x0000ff) {
     const nodes = new Array(21).fill(null).map((x, i) => {
         const material = new MeshBasicMaterial({
-            color: 0x00ff00
+            color: boxColor
         });
         const geometry = i == 5 || i == 17 ? new BoxGeometry() : new BoxGeometry(0, 0, 0);
         return new Mesh(geometry, material);
@@ -18,7 +18,7 @@ export function buildStickFigure() {
 
     const lines = HAND_CONNECTIONS.map(() => {
         const material = new LineBasicMaterial({
-            color: 0x0000ff,
+            color: lineColor,
         });
         const geometry = new BufferGeometry();
         return new Line(geometry, material);
