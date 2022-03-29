@@ -47,15 +47,15 @@ export class StickFigureScene extends BaseScene implements ResultsHandler {
         this.render();
     }
 
-    private build(hands = 2) {
-        this.camera.position.x = 40;
+    private build(hands = 1) {
+        this.camera.position.z = 100;
 
         const grid = new GridHelper(100, 40);
         grid.rotation.x = Math.PI / 2;
-        this.scene.add(grid);
+        //this.scene.add(grid);
 
         const axesHelper = new AxesHelper(100);
-        this.scene.add(axesHelper);
+        //this.scene.add(axesHelper);
 
         const handColors = [
             {boxColor: 0x00ff00, lineColor: 0x0000ff},

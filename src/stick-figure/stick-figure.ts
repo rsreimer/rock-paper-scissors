@@ -12,7 +12,7 @@ export function buildStickFigure(boxColor = 0x00ff00, lineColor = 0x0000ff) {
         const material = new MeshBasicMaterial({
             color: boxColor
         });
-        const geometry = i == 5 || i == 17 ? new BoxGeometry() : new BoxGeometry(0, 0, 0);
+        const geometry = new BoxGeometry();
         return new Mesh(geometry, material);
     })
 
