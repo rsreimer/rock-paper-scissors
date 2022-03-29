@@ -1,5 +1,5 @@
 import {LandmarkList} from "@mediapipe/hands";
-import {transformToXYPlane} from "./transform-to-x-y-plane";
+import {transformToXYPlane} from "../math/transform-to-x-y-plane";
 
 export function getGestureName(gesture: Gesture | null) {
     switch (gesture) {

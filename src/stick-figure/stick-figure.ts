@@ -8,11 +8,11 @@ export interface StickFigure {
 }
 
 export function buildStickFigure() {
-    const nodes = new Array(21).fill(null).map(() => {
+    const nodes = new Array(21).fill(null).map((x, i) => {
         const material = new MeshBasicMaterial({
             color: 0x00ff00
         });
-        const geometry = new BoxGeometry(1, 1, 1);
+        const geometry = i == 5 || i == 17 ? new BoxGeometry() : new BoxGeometry(0, 0, 0);
         return new Mesh(geometry, material);
     })
 
