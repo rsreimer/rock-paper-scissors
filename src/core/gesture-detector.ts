@@ -26,10 +26,15 @@ export class GestureDetector {
     detect(landmarks: LandmarkList): Gesture {
         landmarks = transformToXYPlane(landmarks);
 
-        const isIndexStreched = landmarks[HandLandmarks.Index_finger_tip].x > landmarks[HandLandmarks.Index_finger_pip].x;
-        const isMiddleStreched = landmarks[HandLandmarks.Middle_finger_tip].x > landmarks[HandLandmarks.Middle_finger_pip].x;
-        const isRingStreched = landmarks[HandLandmarks.Ring_finger_tip].x > landmarks[HandLandmarks.Ring_finger_pip].x;
-        const isPinkyStreched = landmarks[HandLandmarks.Pinky_tip].x > landmarks[HandLandmarks.Pinky_pip].x;
+        const index = [HandLandmarks.Index_finger_mcp, HandLandmarks.Index_finger_pip, HandLandmarks.Index_finger_dip, HandLandmarks.Index_finger_tip];
+        const middle = [HandLandmarks.Middle_finger_mcp, HandLandmarks.Middle_finger_pip, HandLandmarks.Middle_finger_dip, HandLandmarks.Middle_finger_tip];
+        const ring = [HandLandmarks.Ring_finger_mcp, HandLandmarks.Ring_finger_pip, HandLandmarks.Ring_finger_dip, HandLandmarks.Ring_finger_tip];
+        const pinky = [HandLandmarks.Pinky_mcp, HandLandmarks.Pinky_pip, HandLandmarks.Pinky_dip, HandLandmarks.Pinky_tip];
+
+        const isIndexStreched = this.isFingerStretched(landmarks, index);
+        const isMiddleStreched = this.isFingerStretched(landmarks, middle);
+        const isRingStreched = this.isFingerStretched(landmarks, ring);
+        const isPinkyStreched = this.isFingerStretched(landmarks, pinky);
 
         if (isIndexStreched && isMiddleStreched && isRingStreched && isPinkyStreched) {
             return Gesture.Paper;
@@ -44,5 +49,9 @@ export class GestureDetector {
         }
 
         return Gesture.Unknown;
+    }
+
+    private isFingerStretched(landmarks: LandmarkList, finger: number[]): boolean {
+        return landmarks[finger[0]].x < landmarks[finger[1]].x && landmarks[finger[1]] < landmarks[finger[3]];
     }
 }
