@@ -2,6 +2,7 @@ import {HandsEstimator} from "./core/hands-estimator";
 import {detectGesture, Gesture} from "./core/gesture-detector";
 import {HandFigureScene} from "./hand-figure/hand-figure-scene";
 import {Game} from "./game/game";
+import {LandmarkList} from "@mediapipe/hands";
 
 function getElbowAngle(startMs: number) {
     const currentMs = new Date().getTime() - startMs;
@@ -20,9 +21,11 @@ function getElbowAngle(startMs: number) {
 
 export function main() {
     const gameOutput = document.getElementById('game-output')!;
+    const gameScore = document.getElementById('game-score')!;
     const gameStartBtn = document.getElementById('game-btn')!;
     const canvas = document.getElementById('hand-figure-canvas') as HTMLCanvasElement;
 
+    let hand: LandmarkList | null = null;
     let pickedGesture: Gesture | null = Gesture.Rock;
 
     const handsEstimator = new HandsEstimator();
@@ -30,16 +33,19 @@ export function main() {
     const game = new Game(
         message => gameOutput.innerHTML = message,
         gesture => pickedGesture = gesture,
+        (playerWins, gameWins) => gameScore.innerHTML = `You: ${playerWins} - Game: ${gameWins}`
     );
 
     let gameStartTime: number | null = null;
 
     gameStartBtn.addEventListener('click', () => {
+        console.log(hand)
         game.start();
         gameStartTime = new Date().getTime();
     })
 
     handsEstimator.addListener(landmarks => {
+        hand = landmarks;
         const gesture = detectGesture(landmarks);
         game.setGesture(gesture);
     });
