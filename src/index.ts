@@ -4,6 +4,7 @@ import {ResultsHandler} from "./core/results-handler";
 import {GestureDetector, getGestureName} from "./core/gesture-detector";
 import {scissors} from "./test-data/test-gestures";
 import {HandFigureScene} from "./hand-figure/hand-figure-scene";
+import {StickFigureScene} from "./stick-figure/stick-figure-scene";
 
 export function main() {
     let currentResults: Results | null = {
@@ -29,7 +30,7 @@ export function main() {
 
     const handlers: ResultsHandler[] = [
         new HandFigureScene(document.getElementById('hand-figure-canvas') as HTMLCanvasElement),
-        //new StickFigureScene(document.getElementById('stick-figure-canvas') as HTMLCanvasElement),
+        new StickFigureScene(document.getElementById('stick-figure-canvas') as HTMLCanvasElement),
         //new VideoScene(document.getElementById('video-canvas') as HTMLCanvasElement),
     ]
 
