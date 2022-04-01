@@ -1,52 +1,36 @@
 import {HandsEstimator} from "./core/hands-estimator";
-import {Results} from "@mediapipe/hands";
-import {ResultsHandler} from "./core/results-handler";
-import {GestureDetector, getGestureName} from "./core/gesture-detector";
-import {scissors} from "./test-data/test-gestures";
+import {detectGesture, Gesture} from "./core/gesture-detector";
 import {HandFigureScene} from "./hand-figure/hand-figure-scene";
-import {StickFigureScene} from "./stick-figure/stick-figure-scene";
+import {Game} from "./game/game";
 
 export function main() {
-    let currentResults: Results | null = {
-        multiHandLandmarks: [
-            scissors
-        ],
-        multiHandedness: [],
-        image: null as any,
-        multiHandWorldLandmarks: []
-    };
+    const gameOutput = document.getElementById('game-output')!;
+    const gameStartBtn = document.getElementById('game-btn')!;
+    const canvas = document.getElementById('hand-figure-canvas') as HTMLCanvasElement;
 
-    const gestureDetector = new GestureDetector();
+    let pickedGesture: Gesture | null = null;
+
     const handsEstimator = new HandsEstimator();
 
-    document.getElementById('btn')!.addEventListener('click', () => {
-        console.log(currentResults)
-    })
+    const game = new Game(
+        message => gameOutput.innerHTML = message,
+        gesture => pickedGesture = gesture,
+    );
 
-    const detectionOutput = document.getElementById('detection')!;
+    gameStartBtn.addEventListener('click', () => game.start())
 
-    // handsEstimator.addListener(results => currentResults = results);
-    // handsEstimator.start();
+    handsEstimator.addListener(landmarks => {
+        const gesture = detectGesture(landmarks);
+        game.setGesture(gesture);
+    });
 
-    const handlers: ResultsHandler[] = [
-        new HandFigureScene(document.getElementById('hand-figure-canvas') as HTMLCanvasElement),
-        new StickFigureScene(document.getElementById('stick-figure-canvas') as HTMLCanvasElement),
-        //new VideoScene(document.getElementById('video-canvas') as HTMLCanvasElement),
-    ]
+    handsEstimator.start();
+
+    const scene = new HandFigureScene(canvas);
 
     function animate() {
         requestAnimationFrame(animate);
-
-        if (currentResults) {
-            handlers.forEach(scene => scene.update(currentResults!));
-
-            const gestures = currentResults
-                .multiHandLandmarks
-                .map(landmarks => gestureDetector.detect(landmarks))
-                .map(gesture => getGestureName(gesture));
-
-            detectionOutput.innerText = gestures.join(', ');
-        }
+        scene.renderGesture(pickedGesture);
     }
 
     animate();

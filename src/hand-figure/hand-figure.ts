@@ -68,9 +68,9 @@ function buildFinger(palm: Mesh, segmentWidth: number) {
     ];
 }
 
-export function buildHandFigure(boxColor = 0x0000ff): HandFigure {
+export function buildHandFigure(): HandFigure {
     const palm = new Mesh(new BoxGeometry(55, 55, 10), new MeshBasicMaterial({
-        color: boxColor
+        color: 0x0000ff
     }));
 
     const index = buildFinger(palm, 17);

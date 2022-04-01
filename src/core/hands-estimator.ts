@@ -1,7 +1,7 @@
 import {Camera} from "@mediapipe/camera_utils";
-import {Hands, Results} from "@mediapipe/hands";
+import {Hands, LandmarkList, Results} from "@mediapipe/hands";
 
-export type HandsListener = (results: Results) => void;
+export type HandsListener = (results: LandmarkList | null) => void;
 
 export class HandsEstimator {
     private camera: Camera;
@@ -11,9 +11,11 @@ export class HandsEstimator {
     constructor(height = 360, width = 640) {
         const videoElement = document.createElement('video');
 
-        this.hands = new Hands({locateFile: (file) => {
+        this.hands = new Hands({
+            locateFile: (file) => {
                 return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-            }});
+            }
+        });
 
         this.hands.setOptions({
             maxNumHands: 2,
@@ -48,6 +50,12 @@ export class HandsEstimator {
     }
 
     private notifyListeners(results: Results) {
-        this.listeners.forEach(fn => fn(results));
+        this.listeners.forEach(fn => {
+            if (results?.multiHandLandmarks[0]) {
+                fn(results?.multiHandLandmarks[0]);
+            } else {
+                fn(null);
+            }
+        });
     }
 }

@@ -1,11 +1,12 @@
-import {Landmark, LandmarkList, Results} from "@mediapipe/hands";
-import {buildHandFigure, HandFigure} from "./hand-figure";
-import {BaseScene} from "../core/base-scene";
-import {ResultsHandler} from "../core/results-handler";
+import {Landmark, LandmarkList} from "@mediapipe/hands";
+import {buildHandFigure} from "./hand-figure";
 import {transformToXYPlane} from "../math/transform-to-x-y-plane";
 import {getAngleBetween} from "../math/get-angle-between";
 import {HandLandmarks} from "../core/hand-landmarks";
-import {Object3D} from "three";
+import {Color, Object3D, PerspectiveCamera, Scene, WebGLRenderer} from "three";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import {Gesture} from "../core/gesture-detector";
+import {paper, rock, scissors} from "../core/gesture-landmarks";
 
 function getAngleBetweenLines([a1, a2]: [Landmark, Landmark], [b1, b2]: [Landmark, Landmark]) {
     return getAngleBetween({
@@ -32,91 +33,90 @@ function rotateFinger(joints: Object3D[], landmarks: LandmarkList, landmarkIndex
     })
 }
 
-export class HandFigureScene extends BaseScene implements ResultsHandler {
-    private handFigures: HandFigure[] = [];
+export class HandFigureScene {
+    private handFigure = buildHandFigure();
+    private scene: Scene;
+    private camera: PerspectiveCamera;
+    private renderer: WebGLRenderer;
+    private controls: OrbitControls;
 
     constructor(canvas: HTMLCanvasElement) {
-        super(canvas);
-        this.build();
-    }
+        this.scene = new Scene();
+        this.scene.background = new Color('white');
 
-    update(results: Results) {
-        const handFigures = this.handFigures;
+        const {width, height} = canvas.getBoundingClientRect();
 
-        if (!handFigures || !results.multiHandLandmarks) {
-            return;
-        }
+        this.renderer = new WebGLRenderer({canvas});
+        this.renderer.setSize(width, height);
 
-        results.multiHandLandmarks.forEach((landmarks, index) => {
-            const handFigure = this.handFigures[index];
+        this.camera = new PerspectiveCamera();
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
 
-            landmarks = transformToXYPlane(landmarks);
-
-            rotateFinger([
-                handFigure.indexMcp,
-                handFigure.indexPip,
-                handFigure.indexDip
-            ], landmarks, [
-                HandLandmarks.Wrist,
-                HandLandmarks.Index_finger_mcp,
-                HandLandmarks.Index_finger_pip,
-                HandLandmarks.Index_finger_dip,
-                HandLandmarks.Index_finger_tip,
-            ])
-
-            rotateFinger([
-                handFigure.middleMcp,
-                handFigure.middlePip,
-                handFigure.middleDip
-            ], landmarks, [
-                HandLandmarks.Wrist,
-                HandLandmarks.Middle_finger_mcp,
-                HandLandmarks.Middle_finger_pip,
-                HandLandmarks.Middle_finger_dip,
-                HandLandmarks.Middle_finger_tip,
-            ])
-
-            rotateFinger([
-                handFigure.ringMcp,
-                handFigure.ringPip,
-                handFigure.ringDip
-            ], landmarks, [
-                HandLandmarks.Wrist,
-                HandLandmarks.Ring_finger_mcp,
-                HandLandmarks.Ring_finger_pip,
-                HandLandmarks.Ring_finger_dip,
-                HandLandmarks.Ring_finger_tip,
-            ])
-
-            rotateFinger([
-                handFigure.pinkyMcp,
-                handFigure.pinkyPip,
-                handFigure.pinkyDip
-            ], landmarks, [
-                HandLandmarks.Wrist,
-                HandLandmarks.Pinky_mcp,
-                HandLandmarks.Pinky_pip,
-                HandLandmarks.Pinky_dip,
-                HandLandmarks.Pinky_tip,
-            ])
-        })
-
-        this.render();
-    }
-
-    private build(hands = 1) {
+        this.controls = new OrbitControls(this.camera, canvas);
+        this.scene.add(this.handFigure.anchor);
         this.camera.position.z = 200;
+    }
 
-        const handColors = [
-            0x0000ff,
-            0x00ffff,
-        ]
+    renderGesture(gesture: Gesture | null) {
+        if (gesture === Gesture.Scissors) this.renderLandmarks(scissors);
+        if (gesture === Gesture.Paper) this.renderLandmarks(paper);
+        if (gesture === Gesture.Rock) this.renderLandmarks(rock);
+    }
 
-        for (let i = 0; i < hands; i++) {
-            const handFigure = buildHandFigure(handColors[i]);
+    renderLandmarks(landmarks: LandmarkList) {
+        landmarks = transformToXYPlane(landmarks);
+        const handFigure = this.handFigure;
 
-            this.handFigures.push(handFigure);
-            this.scene.add(handFigure.anchor);
-        }
+        rotateFinger([
+            handFigure.indexMcp,
+            handFigure.indexPip,
+            handFigure.indexDip
+        ], landmarks, [
+            HandLandmarks.Wrist,
+            HandLandmarks.Index_finger_mcp,
+            HandLandmarks.Index_finger_pip,
+            HandLandmarks.Index_finger_dip,
+            HandLandmarks.Index_finger_tip,
+        ])
+
+        rotateFinger([
+            handFigure.middleMcp,
+            handFigure.middlePip,
+            handFigure.middleDip
+        ], landmarks, [
+            HandLandmarks.Wrist,
+            HandLandmarks.Middle_finger_mcp,
+            HandLandmarks.Middle_finger_pip,
+            HandLandmarks.Middle_finger_dip,
+            HandLandmarks.Middle_finger_tip,
+        ])
+
+        rotateFinger([
+            handFigure.ringMcp,
+            handFigure.ringPip,
+            handFigure.ringDip
+        ], landmarks, [
+            HandLandmarks.Wrist,
+            HandLandmarks.Ring_finger_mcp,
+            HandLandmarks.Ring_finger_pip,
+            HandLandmarks.Ring_finger_dip,
+            HandLandmarks.Ring_finger_tip,
+        ])
+
+        rotateFinger([
+            handFigure.pinkyMcp,
+            handFigure.pinkyPip,
+            handFigure.pinkyDip
+        ], landmarks, [
+            HandLandmarks.Wrist,
+            HandLandmarks.Pinky_mcp,
+            HandLandmarks.Pinky_pip,
+            HandLandmarks.Pinky_dip,
+            HandLandmarks.Pinky_tip,
+        ])
+
+        this.controls.update();
+        this.renderer.render(this.scene, this.camera);
     }
 }
