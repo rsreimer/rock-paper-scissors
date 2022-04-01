@@ -55,16 +55,18 @@ export class HandFigureScene {
 
         this.controls = new OrbitControls(this.camera, canvas);
         this.scene.add(this.handFigure.anchor);
-        this.camera.position.z = 200;
+        this.camera.position.z = -150;
+        this.camera.position.x = 150;
+        this.camera.position.y = 150;
     }
 
-    renderGesture(gesture: Gesture | null) {
-        if (gesture === Gesture.Scissors) this.renderLandmarks(scissors);
-        if (gesture === Gesture.Paper) this.renderLandmarks(paper);
-        if (gesture === Gesture.Rock) this.renderLandmarks(rock);
+    setGesture(gesture: Gesture | null) {
+        if (gesture === Gesture.Scissors) this.setLandmarks(scissors);
+        if (gesture === Gesture.Paper) this.setLandmarks(paper);
+        if (gesture === Gesture.Rock) this.setLandmarks(rock);
     }
 
-    renderLandmarks(landmarks: LandmarkList) {
+    setLandmarks(landmarks: LandmarkList) {
         landmarks = transformToXYPlane(landmarks);
         const handFigure = this.handFigure;
 
@@ -115,7 +117,13 @@ export class HandFigureScene {
             HandLandmarks.Pinky_dip,
             HandLandmarks.Pinky_tip,
         ])
+    }
 
+    setElbowAngle(angle: number) {
+        this.handFigure.anchor.rotation.z = angle;
+    }
+
+    update() {
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }

@@ -18,13 +18,7 @@ export interface HandFigure {
 }
 
 function buildJoint(): Object3D {
-    const geometry = new BoxGeometry(1, 1, 1);
-
-    const material = new MeshBasicMaterial({
-        color: 0xff0000
-    });
-
-    return new Mesh(geometry, material);
+    return new Object3D();
 }
 
 function buildFingerSegment(width: number, boxColor: number): Mesh {
@@ -84,6 +78,9 @@ export function buildHandFigure(): HandFigure {
 
     const anchor = new Object3D();
     anchor.add(palm);
+
+    anchor.position.x = -150;
+    palm.position.x = 150;
 
     return {
         palm,

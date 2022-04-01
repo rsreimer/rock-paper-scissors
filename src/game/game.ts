@@ -1,12 +1,32 @@
 import {Gesture} from "../core/gesture-detector";
 
+function findWinner(player: Gesture, game: Gesture): string {
+    if (player === Gesture.Unknown || game === Gesture.Unknown) {
+        return "Unknown";
+    }
+
+    if (player === game) {
+        return "Tie";
+    }
+
+    if (
+        player === Gesture.Scissors && game === Gesture.Paper ||
+        player === Gesture.Rock && game === Gesture.Scissors ||
+        player === Gesture.Paper && game === Gesture.Rock
+    ) {
+        return "You won!";
+    }
+
+    return "You loose!";
+}
+
 export class Game {
     private interval: any;
     private gesture: Gesture = Gesture.Unknown;
 
     constructor(
         private onMessage: (message: string) => void,
-        private onGesture: (gesture: Gesture) => void
+        private onGesture: (gesture: Gesture | null) => void
     ) {
     }
 
@@ -19,28 +39,24 @@ export class Game {
 
         let countdown = 3;
 
-        this.onMessage(countdown.toString());
+        this.onGesture(Gesture.Rock);
 
         this.interval = setInterval(() => {
             countdown--;
 
-            this.onMessage(countdown.toString());
-
             if (countdown == 0) {
-                this.onMessage('now');
+                const pickedGesture = this.pickGesture(this.gesture);
+                this.onGesture(pickedGesture);
+
                 setTimeout(() => {
-                    this.onGesture(this.getWinner(this.gesture));
-                }, 200)
+                    this.onMessage(findWinner(this.gesture, pickedGesture as number))
+                }, 500)
                 clearInterval(this.interval);
             }
         }, 1000);
     }
 
-    private getWinner(gesture: Gesture): Gesture {
-        if (gesture === Gesture.Rock) return Gesture.Paper;
-        if (gesture === Gesture.Paper) return Gesture.Scissors;
-        if (gesture === Gesture.Scissors) return Gesture.Rock;
-
+    private pickGesture(gesture: Gesture): Gesture | null {
         // Pick at random
         return [
             Gesture.Paper,
