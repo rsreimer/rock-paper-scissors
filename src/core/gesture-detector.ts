@@ -52,6 +52,6 @@ export class GestureDetector {
     }
 
     private isFingerStretched(landmarks: LandmarkList, finger: number[]): boolean {
-        return landmarks[finger[0]].x < landmarks[finger[1]].x && landmarks[finger[1]] < landmarks[finger[3]];
+        return landmarks[finger[0]].x < landmarks[finger[1]].x && landmarks[finger[1]].x < landmarks[finger[3]].x;
     }
 }

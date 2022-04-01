@@ -2,13 +2,13 @@ import {HandsEstimator} from "./core/hands-estimator";
 import {Results} from "@mediapipe/hands";
 import {ResultsHandler} from "./core/results-handler";
 import {GestureDetector, getGestureName} from "./core/gesture-detector";
-import {StickFigureScene} from "./stick-figure/stick-figure-scene";
-import {rock3} from "./test-data/test-gestures";
+import {scissors} from "./test-data/test-gestures";
+import {HandFigureScene} from "./hand-figure/hand-figure-scene";
 
 export function main() {
     let currentResults: Results | null = {
         multiHandLandmarks: [
-            rock3
+            scissors
         ],
         multiHandedness: [],
         image: null as any,
@@ -28,7 +28,8 @@ export function main() {
     // handsEstimator.start();
 
     const handlers: ResultsHandler[] = [
-        new StickFigureScene(document.getElementById('stick-figure-canvas') as HTMLCanvasElement),
+        new HandFigureScene(document.getElementById('hand-figure-canvas') as HTMLCanvasElement),
+        //new StickFigureScene(document.getElementById('stick-figure-canvas') as HTMLCanvasElement),
         //new VideoScene(document.getElementById('video-canvas') as HTMLCanvasElement),
     ]
 
