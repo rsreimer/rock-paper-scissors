@@ -1,7 +1,7 @@
 import {Camera} from "@mediapipe/camera_utils";
-import {Hands, LandmarkList, Results} from "@mediapipe/hands";
+import {Hands, Results} from "@mediapipe/hands";
 
-export type HandsListener = (results: LandmarkList | null) => void;
+export type HandsListener = (results: Results | null) => void;
 
 export class HandsEstimator {
     private camera: Camera;
@@ -50,12 +50,6 @@ export class HandsEstimator {
     }
 
     private notifyListeners(results: Results) {
-        this.listeners.forEach(fn => {
-            if (results?.multiHandLandmarks[0]) {
-                fn(results?.multiHandLandmarks[0]);
-            } else {
-                fn(null);
-            }
-        });
+        this.listeners.forEach(fn => fn(results));
     }
 }

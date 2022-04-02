@@ -2,7 +2,8 @@ import {HandsEstimator} from "./core/hands-estimator";
 import {detectGesture, Gesture} from "./core/gesture-detector";
 import {HandFigureScene} from "./hand-figure/hand-figure-scene";
 import {Game} from "./game/game";
-import {LandmarkList} from "@mediapipe/hands";
+import {LandmarkList, Results} from "@mediapipe/hands";
+import {VideoScene} from "./video/video-scene";
 
 function getElbowAngle(startMs: number) {
     const currentMs = new Date().getTime() - startMs;
@@ -23,8 +24,10 @@ export function main() {
     const gameOutput = document.getElementById('game-output')!;
     const gameScore = document.getElementById('game-score')!;
     const gameStartBtn = document.getElementById('game-btn')!;
-    const canvas = document.getElementById('hand-figure-canvas') as HTMLCanvasElement;
+    const videoCanvas = document.getElementById('video-canvas') as HTMLCanvasElement;
+    const handCanvas = document.getElementById('hand-figure-canvas') as HTMLCanvasElement;
 
+    let results: Results | null = null;
     let hand: LandmarkList | null = null;
     let pickedGesture: Gesture | null = Gesture.Rock;
 
@@ -44,15 +47,23 @@ export function main() {
         gameStartTime = new Date().getTime();
     })
 
-    handsEstimator.addListener(landmarks => {
-        hand = landmarks;
-        const gesture = detectGesture(landmarks);
-        game.setGesture(gesture);
+    handsEstimator.addListener(r => {
+        results = r;
+
+        const landmarks = r?.multiHandLandmarks[0];
+
+        if (landmarks) {
+            hand = landmarks;
+
+            const gesture = detectGesture(landmarks);
+            game.setGesture(gesture);
+        }
     });
 
     handsEstimator.start();
 
-    const scene = new HandFigureScene(canvas);
+    const scene = new HandFigureScene(handCanvas);
+    const videoScene = new VideoScene(videoCanvas);
 
     function animate() {
         requestAnimationFrame(animate);
@@ -61,6 +72,8 @@ export function main() {
         }
         scene.setGesture(pickedGesture);
         scene.update();
+
+        if (results) videoScene.update(results);
     }
 
     animate();
