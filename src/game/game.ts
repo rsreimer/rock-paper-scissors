@@ -42,8 +42,8 @@ export class Game {
         }, 1000);
     }
 
-    private pickGesture(gesture: Gesture): Gesture | null {
-        // Pick at random
+    private pickGesture(player: Gesture): Gesture | null {
+        // Pick a gesture at random, could use player gesture to cheat though ...
         return [
             Gesture.Paper,
             Gesture.Rock,
