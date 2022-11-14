@@ -1,6 +1,6 @@
 # Rock Paper Scissors
 
-Demo: https://rsr-itminds.github.io/rock-paper-scissors/
+Demo: https://rsreimer.github.io/rock-paper-scissors/
 
 ## MediaPipe
 
