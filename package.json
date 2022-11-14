@@ -16,8 +16,7 @@
   },
   "private": true,
   "author": {
-    "name": "Rasmus Sundgaard Reimer",
-    "email": "rsr@it-minds.dk"
+    "name": "Rasmus Sundgaard Reimer"
   },
   "license": "MIT",
   "devDependencies": {
